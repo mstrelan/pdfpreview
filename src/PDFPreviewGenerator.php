@@ -125,9 +125,16 @@ class PDFPreviewGenerator {
   protected function getDestinationURI(File $file) {
     // TODO: Check if we should use human-readable filenames or md5 filenames.
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
-    $filename = \Drupal::service('file_system')->basename($file->getFileUri(), '.pdf');
-    $filename = \Drupal::service('transliteration')->transliterate($filename, $langcode);
-    return file_default_scheme() . '://pdfpreview/' . $file->id() . '-' . $filename . '.jpg';
+    $output_path = file_default_scheme() . '://' . $this->config->get('path');
+    if ($this->config->get('filenames') == 'human') {
+      $filename = \Drupal::service('file_system')->basename($file->getFileUri(), '.pdf');
+      $filename = \Drupal::service('transliteration')->transliterate($filename, $langcode);
+      $filename = $file->id() . '-' . $filename;
+    }
+    else {
+      $filename = md5('pdfpreview' . $file->id());
+    }
+    return $output_path . '/' . $filename . '.jpg';
   }
 
 }
