@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\imagemagick\Plugin\ImageToolkit\ImagemagickToolkit;
 
 /**
  * Implements hook_theme().
@@ -30,6 +31,17 @@ function pdfpreview_file_update(EntityInterface $file) {
  */
 function pdfpreview_file_delete(EntityInterface $file) {
   \Drupal::service('pdfpreview.generator')->deletePDFPreview($file);
+}
+
+/**
+ * Implements hook_imagemagic_arguments_alter().
+ */
+function pdfpreview_imagemagick_arguments_alter(ImagemagickToolkit $toolkit, $command) {
+  $i = $toolkit->findArgument('-pdfpreview');
+  if ($i !== FALSE) {
+    $toolkit->removeArgument($i);
+    $toolkit->setSourceLocalPath($toolkit->getSourceLocalPath() . '[0]');
+  }
 }
 
 /**

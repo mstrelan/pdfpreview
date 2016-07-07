@@ -106,6 +106,7 @@ class PDFPreviewGenerator {
     $this->toolkit->addArgument('-flatten');
     $this->toolkit->addArgument('-resize ' . escapeshellarg($this->config->get('size')));
     $this->toolkit->addArgument('-quality ' . escapeshellarg($this->config->get('quality')));
+    $this->toolkit->addArgument('-pdfpreview');
     $this->toolkit->setDestinationFormat('JPG');
     $this->toolkit->setSourceFormat('PDF');
     $this->toolkit->setSourceLocalPath($local_path);
