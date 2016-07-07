@@ -1,0 +1,6 @@
+quality: 75
+size: '1024x1024'
+show_description: FALSE
+tag: 'span'
+filenames_format: 'human'
+fallback_formatter: 'file_default'
