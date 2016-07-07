@@ -172,14 +172,14 @@ class PDFPreviewFormatter extends ImageFormatter {
         $elements[$delta] = array(
           '#theme' => 'file_link',
           '#file' => $file,
-          '#description' => $item->description,
           '#cache' => array(
             'tags' => $file->getCacheTags(),
           ),
         );
       }
 
-//      $elements[$delta]['#theme_wrappers'][] = 'pdfpreview_formatter';
+      $elements[$delta]['#description'] = $item->description;
+      $elements[$delta]['#theme_wrappers'][] = 'pdfpreview_formatter';
       $elements[$delta]['#settings'] = $this->getSettings();
       $elements[$delta]['#fid'] = $file->id();
     }
