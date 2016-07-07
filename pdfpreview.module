@@ -5,6 +5,8 @@
  * Generates image previews of PDF files.
  */
 
+use Drupal\Core\Entity\EntityInterface;
+
 /**
  * Implements hook_theme().
  */
@@ -14,6 +16,14 @@ function pdfpreview_theme($existing, $type, $theme, $path) {
       'render element' => 'element',
     ),
   );
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function pdfpreview_file_delete(EntityInterface $file) {
+  $generator = \Drupal::service('pdfpreview.generator');
+  $generator->deletePDFPreview($file);
 }
 
 /**

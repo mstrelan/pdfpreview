@@ -49,6 +49,16 @@ class PDFPreviewGenerator {
   }
 
   /**
+   * Deletes the preview image for a file.
+   *
+   * @param \Drupal\file\Entity\File $file
+   *    The file to delete the preview for.
+   */
+  public function deletePDFPreview(File $file) {
+    file_unmanaged_delete($this->getDestinationURI($file));
+  }
+
+  /**
    * Creates a preview image of the first page of a PDF file.
    *
    * @param \Drupal\file\Entity\File $file
