@@ -59,6 +59,21 @@ class PDFPreviewGenerator {
   }
 
   /**
+   * Deletes the preview image for a file when the file is updated.
+   *
+   * @param \Drupal\file\Entity\File $file
+   *    The file to delete the preview for.
+   */
+  public function updatePDFPreview(File $file) {
+    $original = $file->original;
+    if ($file->getFileUri() != $original->getFileUri()
+      || filemtime($file->getFileUri()) != filemtime($original->getFileUri())
+      || filesize($file->getFileUri()) != filesize($original->getFileUri())) {
+      $this->deletePDFPreview($original);
+    }
+  }
+
+  /**
    * Creates a preview image of the first page of a PDF file.
    *
    * @param \Drupal\file\Entity\File $file
