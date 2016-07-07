@@ -117,8 +117,6 @@ class PDFPreviewFormatter extends ImageFormatter {
       $cache_tags = $image_style->getCacheTags();
     }
 
-    $generator = \Drupal::service('pdfpreview.generator');
-
     foreach ($files as $delta => $file) {
       $cache_contexts = array();
       if (isset($link_file)) {
@@ -148,7 +146,7 @@ class PDFPreviewFormatter extends ImageFormatter {
       // Separate the PDF previews from the other files.
       $show_preview = FALSE;
       if ($file->getMimeType() == 'application/pdf') {
-        $preview_uri = $generator->getPDFPreview($file);
+        $preview_uri = \Drupal::service('pdfpreview.generator')->getPDFPreview($file);
         $preview = \Drupal::service('image.factory')->get($preview_uri);
         if ($preview->isValid()) {
           $show_preview = TRUE;
