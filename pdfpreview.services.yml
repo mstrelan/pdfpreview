@@ -1,0 +1,3 @@
+services:
+  pdfpreview.generator:
+    class: Drupal\pdfpreview\PDFPreviewGenerator
