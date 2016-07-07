@@ -69,6 +69,23 @@ class PDFPreviewFormatter extends ImageFormatter {
   /**
    * {@inheritdoc}
    */
+  public function settingsSummary() {
+    $summary = parent::settingsSummary();
+    $summary[] = t('Separator tag: @tag', array(
+      '@tag' => $this->getSetting('tag'),
+    ));
+    $summary[] = t('Descriptions: @visibility', array(
+      '@visibility' => $this->getSetting('show_description') ? t('Visible') : t('Hidden'),
+    ));
+    if ($this->getSetting('fallback_formatter')) {
+      $summary[] = t('Using the default file formatter for non-PDF files');
+    }
+    return $summary;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = array();
 
