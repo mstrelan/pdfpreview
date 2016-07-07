@@ -3,6 +3,7 @@ type: module
 description: Show a snapshot of the first page of pdf files attached to nodes.
 package: Media
 core: 8.x
+configure: pdfpreview.settings
 dependencies:
   - image
   - imagemagick
