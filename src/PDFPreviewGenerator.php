@@ -42,10 +42,21 @@ class PDFPreviewGenerator {
    */
   public function getPDFPreview(File $file) {
     $destination_uri = $this->getDestinationURI($file);
-    if (!file_exists($destination_uri)) {
-      $preview = $this->createPDFPreview($file, $destination_uri);
+    // Check if a preview already exists.
+    if (file_exists($destination_uri)) {
+      // Check if the existing preview is older than the file itself.
+      if (filemtime($file->getFileUri()) <= filemtime($destination_uri)) {
+        // The existing preview can be used, nothing to do.
+        return $destination_uri;
+      }
+      else {
+        // Delete the existing but out-of-date preview.
+        $this->deletePDFPreview($file);
+      }
     }
-    return $destination_uri;
+    if ($this->createPDFPreview($file, $destination_uri)) {
+      return $destination_uri;
+    }
   }
 
   /**
@@ -55,7 +66,9 @@ class PDFPreviewGenerator {
    *    The file to delete the preview for.
    */
   public function deletePDFPreview(File $file) {
-    file_unmanaged_delete($this->getDestinationURI($file));
+    $uri = $this->getDestinationURI($file);
+    file_unmanaged_delete($uri);
+    image_path_flush($uri);
   }
 
   /**
@@ -67,7 +80,6 @@ class PDFPreviewGenerator {
   public function updatePDFPreview(File $file) {
     $original = $file->original;
     if ($file->getFileUri() != $original->getFileUri()
-      || filemtime($file->getFileUri()) != filemtime($original->getFileUri())
       || filesize($file->getFileUri()) != filesize($original->getFileUri())) {
       $this->deletePDFPreview($original);
     }
@@ -80,6 +92,9 @@ class PDFPreviewGenerator {
    *    The file to generate a preview for.
    * @param string $destination
    *    The URI where the preview should be created.
+   *
+   * @return bool
+   *    TRUE if the preview was successfully generated, FALSE is otherwise.
    */
   protected function createPDFPreview(File $file, $destination) {
     $file_uri = $file->getFileUri();
@@ -95,7 +110,7 @@ class PDFPreviewGenerator {
     $this->toolkit->setSourceFormat('PDF');
     $this->toolkit->setSourceLocalPath($local_path);
 
-    $this->toolkit->save($destination);
+    return $this->toolkit->save($destination);
   }
 
   /**
@@ -108,6 +123,7 @@ class PDFPreviewGenerator {
    *   The destination URI.
    */
   protected function getDestinationURI(File $file) {
+    // TODO: Check if we should use human-readable filenames or md5 filenames.
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $filename = \Drupal::service('file_system')->basename($file->getFileUri(), '.pdf');
     $filename = \Drupal::service('transliteration')->transliterate($filename, $langcode);
