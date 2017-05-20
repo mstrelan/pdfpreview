@@ -85,6 +85,16 @@ class PDFPreviewSettingsForm extends ConfigFormBase {
       '#description' => t('This changes how filenames will be used on generated previews. If you change this after some files were generated, you must delete them manually.'),
       '#default_value' => $config->get('filenames'),
     );
+    $form['type'] = array(
+      '#type' => 'select',
+      '#title' => t('Preview image type'),
+      '#options' => array(
+        'jpg' => t('JPEG'),
+        'png' => t('PNG'),
+      ),
+      '#description' => t('The image file type that should be used when generating preview images.'),
+      '#default_value' => $config->get('type'),
+    );
     return parent::buildForm($form, $form_state);
   }
 
@@ -97,6 +107,7 @@ class PDFPreviewSettingsForm extends ConfigFormBase {
       ->set('size', $form_state->getValue('size'))
       ->set('quality', $form_state->getValue('quality'))
       ->set('filenames', $form_state->getValue('filenames'))
+      ->set('type', $form_state->getValue('type'))
       ->save();
 
     parent::submitForm($form, $form_state);
