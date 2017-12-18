@@ -6,7 +6,7 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\imagemagick\Plugin\ImageToolkit\ImagemagickToolkit;
+use Drupal\imagemagick\ImagemagickExecArguments;
 
 /**
  * Implements hook_theme().
@@ -36,11 +36,11 @@ function pdfpreview_file_delete(EntityInterface $file) {
 /**
  * Implements hook_imagemagic_arguments_alter().
  */
-function pdfpreview_imagemagick_arguments_alter(ImagemagickToolkit $toolkit, $command) {
-  $i = $toolkit->findArgument('-pdfpreview');
+function pdfpreview_imagemagick_arguments_alter(ImagemagickExecArguments $arguments, $command) {
+  $i = $arguments->findArgument('-pdfpreview');
   if ($i !== FALSE) {
-    $toolkit->removeArgument($i);
-    $toolkit->setSourceLocalPath($toolkit->getSourceLocalPath() . '[0]');
+    $arguments->removeArgument($i);
+    $arguments->setSourceLocalPath($toolkit->getSourceLocalPath() . '[0]');
   }
 }
 
