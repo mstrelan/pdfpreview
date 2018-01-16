@@ -34,13 +34,12 @@ function pdfpreview_file_delete(EntityInterface $file) {
 }
 
 /**
- * Implements hook_imagemagic_arguments_alter().
+ * Implements hook_imagemagick_arguments_alter().
  */
 function pdfpreview_imagemagick_arguments_alter(ImagemagickExecArguments $arguments, $command) {
   $i = $arguments->findArgument('-pdfpreview');
   if ($i !== FALSE) {
     $arguments->removeArgument($i);
-    $arguments->setSourceLocalPath($toolkit->getSourceLocalPath() . '[0]');
   }
 }
 
