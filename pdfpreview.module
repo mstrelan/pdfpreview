@@ -40,7 +40,7 @@ function pdfpreview_imagemagick_arguments_alter(ImagemagickExecArguments $argume
   $i = $arguments->findArgument('-pdfpreview');
   if ($i !== FALSE) {
     $arguments->removeArgument($i);
-    $arguments->setSourceLocalPath($toolkit->getSourceLocalPath() . '[0]');
+    $arguments->setSourceLocalPath($arguments->getSourceLocalPath() . '[0]');
   }
 }
 
