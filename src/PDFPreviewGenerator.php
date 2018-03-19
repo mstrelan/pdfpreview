@@ -1,37 +1,71 @@
 <?php
-/**
- * @file
- * Contains Drupal\pdfpreview\PDFPreviewGenerator.
- */
 
 namespace Drupal\pdfpreview;
 
+use Drupal\Component\Transliteration\TransliterationInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\File\FileSystem;
 use Drupal\Core\ImageToolkit\ImageToolkitManager;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\file\Entity\File;
-use Drupal\imagemagick\Plugin\ImageToolkit\ImagemagickToolkit;
 
 class PDFPreviewGenerator {
 
   /**
-   * The config for this module.
+   * Config factory.
    *
-   * @var
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected $config;
+  protected $configFactory;
 
   /**
-   * The toolkit to generate previews.
+   * The file system service.
    *
-   * @var ImagemagickToolkit
+   * @var \Drupal\Core\File\FileSystem
    */
-  protected $toolkit;
+  protected $fileSystem;
+
+  /**
+   * The transliteration service.
+   *
+   * @var \Drupal\Component\Transliteration\TransliterationInterface
+   */
+  protected $transliteration;
+
+  /**
+   * The toolkit manager service.
+   *
+   * @var \Drupal\imagemagick\Plugin\ImageToolkit\ImagemagickToolkit
+   */
+  protected $toolkitManager;
+
+  /**
+   * The language manager service.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
 
   /**
    * Constructs a PDFPreviewGenerator object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\File\FileSystem $file_system
+   *   The file system service.
+   * @param \Drupal\Component\Transliteration\TransliterationInterface $transliteration
+   *   The transliteration service.
+   * @param \Drupal\Core\ImageToolkit\ImageToolkitManager $toolkit_manager
+   *   The image toolkit plugin manager service..
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   The language manager service.
    */
-  public function __construct() {
-    $this->config = \Drupal::config('pdfpreview.settings');
-    $this->toolkit = \Drupal::service('image.toolkit.manager')->createInstance('imagemagick');
+  public function __construct(ConfigFactoryInterface $config_factory, FileSystem $file_system, TransliterationInterface $transliteration, ImageToolkitManager $toolkit_manager, LanguageManagerInterface $language_manager) {
+    $this->configFactory = $config_factory;
+    $this->fileSystem = $file_system;
+    $this->transliteration = $transliteration;
+    $this->toolkitManager = $toolkit_manager;
+    $this->languageManager = $language_manager;
   }
 
   /**
@@ -98,25 +132,29 @@ class PDFPreviewGenerator {
    */
   protected function createPDFPreview(File $file, $destination) {
     $file_uri = $file->getFileUri();
-    $local_path = \Drupal::service('file_system')->realpath($file_uri);
+    $local_path = $this->fileSystem->realpath($file_uri);
+    $config = $this->configFactory->get('pdfpreview.settings');
 
-    $directory = \Drupal::service('file_system')->dirname($destination);
+    /** @var \Drupal\imagemagick\Plugin\ImageToolkit\ImagemagickToolkit $toolkit */
+    $toolkit = $this->toolkitManager->createInstance('imagemagick');
+
+    $directory = $this->fileSystem->dirname($destination);
     file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
-    $this->toolkit->addArgument('-background white');
-    $this->toolkit->addArgument('-flatten');
-    $this->toolkit->addArgument('-resize ' . escapeshellarg($this->config->get('size')));
-    $this->toolkit->addArgument('-quality ' . escapeshellarg($this->config->get('quality')));
-    if ($this->config->get('type') == 'png') {
-      $this->toolkit->setDestinationFormat('PNG');
+    $toolkit->addArgument('-background white');
+    $toolkit->addArgument('-flatten');
+    $toolkit->addArgument('-resize ' . escapeshellarg($config->get('size')));
+    $toolkit->addArgument('-quality ' . escapeshellarg($config->get('quality')));
+    if ($config->get('type') == 'png') {
+      $toolkit->setDestinationFormat('PNG');
     }
     else {
-      $this->toolkit->setDestinationFormat('JPG');
+      $toolkit->setDestinationFormat('JPG');
     }
-    $this->toolkit->setSourceFormat('PDF');
-    $this->toolkit->setSourceLocalPath($local_path);
-    $this->toolkit->arguments()->setSourceFrames('[0]');
+    $toolkit->setSourceFormat('PDF');
+    $toolkit->setSourceLocalPath($local_path);
+    $toolkit->arguments()->setSourceFrames('[0]');
 
-    return $this->toolkit->save($destination);
+    return $toolkit->save($destination);
   }
 
   /**
@@ -129,24 +167,26 @@ class PDFPreviewGenerator {
    *   The destination URI.
    */
   protected function getDestinationURI(File $file) {
-    // TODO: Check if we should use human-readable filenames or md5 filenames.
-    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
-    $output_path = file_default_scheme() . '://' . $this->config->get('path');
-    if ($this->config->get('filenames') == 'human') {
-      $filename = \Drupal::service('file_system')->basename($file->getFileUri(), '.pdf');
-      $filename = \Drupal::service('transliteration')->transliterate($filename, $langcode);
+    $config = $this->configFactory->get('pdfpreview.settings');
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
+    $output_path = file_default_scheme() . '://' . $config->get('path');
+
+    if ($config->get('filenames') == 'human') {
+      $filename = $this->fileSystem->basename($file->getFileUri(), '.pdf');
+      $filename = $this->transliteration->transliterate($filename, $langcode);
       $filename = $file->id() . '-' . $filename;
     }
     else {
       $filename = md5('pdfpreview' . $file->id());
     }
 
-    if ($this->config->get('type') == 'png') {
+    if ($config->get('type') == 'png') {
       $extension = '.png';
     }
     else {
       $extension = '.jpg';
     }
+
     return $output_path . '/' . $filename . $extension;
   }
 
