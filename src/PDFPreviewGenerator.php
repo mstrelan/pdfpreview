@@ -9,6 +9,9 @@ use Drupal\Core\ImageToolkit\ImageToolkitManager;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\file\Entity\File;
 
+/**
+ * Generates PDF Previews.
+ */
 class PDFPreviewGenerator {
 
   /**
@@ -97,7 +100,7 @@ class PDFPreviewGenerator {
    * Deletes the preview image for a file.
    *
    * @param \Drupal\file\Entity\File $file
-   *    The file to delete the preview for.
+   *   The file to delete the preview for.
    */
   public function deletePDFPreview(File $file) {
     $uri = $this->getDestinationURI($file);
@@ -109,7 +112,7 @@ class PDFPreviewGenerator {
    * Deletes the preview image for a file when the file is updated.
    *
    * @param \Drupal\file\Entity\File $file
-   *    The file to delete the preview for.
+   *   The file to delete the preview for.
    */
   public function updatePDFPreview(File $file) {
     $original = $file->original;
@@ -123,12 +126,12 @@ class PDFPreviewGenerator {
    * Creates a preview image of the first page of a PDF file.
    *
    * @param \Drupal\file\Entity\File $file
-   *    The file to generate a preview for.
+   *   The file to generate a preview for.
    * @param string $destination
-   *    The URI where the preview should be created.
+   *   The URI where the preview should be created.
    *
    * @return bool
-   *    TRUE if the preview was successfully generated, FALSE is otherwise.
+   *   TRUE if the preview was successfully generated, FALSE is otherwise.
    */
   protected function createPDFPreview(File $file, $destination) {
     $file_uri = $file->getFileUri();

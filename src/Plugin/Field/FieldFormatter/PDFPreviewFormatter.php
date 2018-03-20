@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\pdfpreview\Plugin\Field\FieldFormatter\PDFPreviewFormatter.
- */
 
 namespace Drupal\pdfpreview\Plugin\Field\FieldFormatter;
 
@@ -44,22 +40,22 @@ class PDFPreviewFormatter extends ImageFormatter {
     $form = parent::settingsForm($form, $form_state);
     $form['show_description'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Description'),
-      '#description' => t('Show file description beside image'),
-      '#options' => array(0 => t('No'), 1 => t('Yes')),
+      '#title' => $this->t('Description'),
+      '#description' => $this->t('Show file description beside image'),
+      '#options' => array(0 => $this->t('No'), 1 => $this->t('Yes')),
       '#default_value' => $this->getSetting('show_description'),
     );
     $form['tag'] = array(
       '#type' => 'radios',
-      '#title' => t('HTML tag'),
-      '#description' => t('Select which kind of HTML element will be used to theme elements'),
+      '#title' => $this->t('HTML tag'),
+      '#description' => $this->t('Select which kind of HTML element will be used to theme elements'),
       '#options' => array('span' => 'span', 'div' => 'div'),
       '#default_value' => $this->getSetting('tag'),
     );
     $form['fallback_formatter'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Fallback to default file formatter'),
-      '#description' => t('When enabled, non-PDF files will be formatted using a default file formatter.'),
+      '#title' => $this->t('Fallback to default file formatter'),
+      '#description' => $this->t('When enabled, non-PDF files will be formatted using a default file formatter.'),
       '#default_value' => (boolean) $this->getSetting('fallback_formatter'),
       '#return_value' => \Drupal::config('pdfpreview.settings')->get('fallback_formatter'),
     );
@@ -71,14 +67,14 @@ class PDFPreviewFormatter extends ImageFormatter {
    */
   public function settingsSummary() {
     $summary = parent::settingsSummary();
-    $summary[] = t('Separator tag: @tag', array(
+    $summary[] = $this->t('Separator tag: @tag', array(
       '@tag' => $this->getSetting('tag'),
     ));
-    $summary[] = t('Descriptions: @visibility', array(
-      '@visibility' => $this->getSetting('show_description') ? t('Visible') : t('Hidden'),
+    $summary[] = $this->t('Descriptions: @visibility', array(
+      '@visibility' => $this->getSetting('show_description') ? $this->t('Visible') : $this->t('Hidden'),
     ));
     if ($this->getSetting('fallback_formatter')) {
-      $summary[] = t('Using the default file formatter for non-PDF files');
+      $summary[] = $this->t('Using the default file formatter for non-PDF files');
     }
     return $summary;
   }
