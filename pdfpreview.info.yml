@@ -5,5 +5,5 @@ package: Media
 core: 8.x
 configure: pdfpreview.settings
 dependencies:
-  - image
-  - imagemagick
+  - drupal:image
+  - imagemagick:imagemagick (>=8.x-2.3)
