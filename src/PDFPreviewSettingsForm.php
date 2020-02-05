@@ -39,23 +39,23 @@ class PDFPreviewSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('pdfpreview.settings');
-    $form['path'] = array(
+    $form['path'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Preview path'),
-      '#description' => $this->t('Path inside files directory where previews are stored. For example %default', array(
+      '#description' => $this->t('Path inside files directory where previews are stored. For example %default', [
         '%default' => 'pdfpreview',
-      )),
+      ]),
       '#default_value' => $config->get('path'),
-    );
-    $form['size'] = array(
+    ];
+    $form['size'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Preview size'),
-      '#description' => $this->t('Size of the preview in pixels. For example %example. You must set this to a value big enough to apply your image styles.', array(
+      '#description' => $this->t('Size of the preview in pixels. For example %example. You must set this to a value big enough to apply your image styles.', [
         '%example' => '100x100',
-      )),
+      ]),
       '#default_value' => $config->get('size'),
-    );
-    $form['quality'] = array(
+    ];
+    $form['quality'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Image quality'),
       '#size' => 3,
@@ -63,27 +63,27 @@ class PDFPreviewSettingsForm extends ConfigFormBase {
       '#field_suffix' => '%',
       '#description' => $this->t('Image extraction quality'),
       '#default_value' => $config->get('quality'),
-    );
-    $form['filenames'] = array(
+    ];
+    $form['filenames'] = [
       '#type' => 'radios',
       '#title' => $this->t('Generated filenames'),
-      '#options' => array(
+      '#options' => [
         'machine' => $this->t('Filename hash'),
         'human' => $this->t('From PDF filename'),
-      ),
+      ],
       '#description' => $this->t('This changes how filenames will be used on generated previews. If you change this after some files were generated, you must delete them manually.'),
       '#default_value' => $config->get('filenames'),
-    );
-    $form['type'] = array(
+    ];
+    $form['type'] = [
       '#type' => 'select',
       '#title' => $this->t('Preview image type'),
-      '#options' => array(
+      '#options' => [
         'jpg' => $this->t('JPEG'),
         'png' => $this->t('PNG'),
-      ),
+      ],
       '#description' => $this->t('The image file type that should be used when generating preview images.'),
       '#default_value' => $config->get('type'),
-    );
+    ];
     return parent::buildForm($form, $form_state);
   }
 
