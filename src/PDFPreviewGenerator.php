@@ -24,7 +24,7 @@ class PDFPreviewGenerator {
   /**
    * The file system service.
    *
-   * @var \Drupal\Core\File\FileSystem
+   * @var \Drupal\Core\File\FileSystemInterface
    */
   protected $fileSystem;
 
@@ -38,7 +38,7 @@ class PDFPreviewGenerator {
   /**
    * The toolkit manager service.
    *
-   * @var \Drupal\imagemagick\Plugin\ImageToolkit\ImagemagickToolkit
+   * @var \Drupal\Core\ImageToolkit\ImageToolkitManager
    */
   protected $toolkitManager;
 
@@ -115,6 +115,7 @@ class PDFPreviewGenerator {
    *   The file to delete the preview for.
    */
   public function updatePDFPreview(File $file) {
+    /** @var \Drupal\file\Entity\File $original */
     $original = $file->original;
     if ($file->getFileUri() != $original->getFileUri()
       || filesize($file->getFileUri()) != filesize($original->getFileUri())) {
