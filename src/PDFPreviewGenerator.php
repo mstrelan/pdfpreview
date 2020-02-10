@@ -4,7 +4,7 @@ namespace Drupal\pdfpreview;
 
 use Drupal\Component\Transliteration\TransliterationInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\File\FileSystem;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\ImageToolkit\ImageToolkitManager;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\file\Entity\File;
@@ -54,7 +54,7 @@ class PDFPreviewGenerator {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
-   * @param \Drupal\Core\File\FileSystem $file_system
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
    *   The file system service.
    * @param \Drupal\Component\Transliteration\TransliterationInterface $transliteration
    *   The transliteration service.
@@ -63,7 +63,7 @@ class PDFPreviewGenerator {
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   The language manager service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, FileSystem $file_system, TransliterationInterface $transliteration, ImageToolkitManager $toolkit_manager, LanguageManagerInterface $language_manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, FileSystemInterface $file_system, TransliterationInterface $transliteration, ImageToolkitManager $toolkit_manager, LanguageManagerInterface $language_manager) {
     $this->configFactory = $config_factory;
     $this->fileSystem = $file_system;
     $this->transliteration = $transliteration;
@@ -104,7 +104,7 @@ class PDFPreviewGenerator {
    */
   public function deletePDFPreview(File $file) {
     $uri = $this->getDestinationURI($file);
-    file_unmanaged_delete($uri);
+    $this->fileSystem->delete($uri);
     image_path_flush($uri);
   }
 
@@ -142,7 +142,7 @@ class PDFPreviewGenerator {
     $toolkit = $this->toolkitManager->createInstance('imagemagick');
 
     $directory = $this->fileSystem->dirname($destination);
-    file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+    $this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
     $toolkit->addArgument('-background white');
     $toolkit->addArgument('-flatten');
     $toolkit->addArgument('-resize ' . escapeshellarg($config->get('size')));
@@ -171,8 +171,10 @@ class PDFPreviewGenerator {
    */
   protected function getDestinationURI(File $file) {
     $config = $this->configFactory->get('pdfpreview.settings');
+    $scheme = $this->configFactory->get('system.file')->get('default_scheme');
     $langcode = $this->languageManager->getCurrentLanguage()->getId();
-    $output_path = file_default_scheme() . '://' . $config->get('path');
+
+    $output_path = $scheme . '://' . $config->get('path');
 
     if ($config->get('filenames') == 'human') {
       $filename = $this->fileSystem->basename($file->getFileUri(), '.pdf');
