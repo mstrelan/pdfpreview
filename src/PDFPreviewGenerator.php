@@ -144,18 +144,18 @@ class PDFPreviewGenerator {
 
     $directory = $this->fileSystem->dirname($destination);
     $this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
-    $toolkit->addArgument('-background white');
-    $toolkit->addArgument('-flatten');
-    $toolkit->addArgument('-resize ' . escapeshellarg($config->get('size')));
-    $toolkit->addArgument('-quality ' . escapeshellarg($config->get('quality')));
+    $toolkit->arguments()->add('-background white');
+    $toolkit->arguments()->add('-flatten');
+    $toolkit->arguments()->add('-resize ' . escapeshellarg($config->get('size')));
+    $toolkit->arguments()->add('-quality ' . escapeshellarg($config->get('quality')));
     if ($config->get('type') == 'png') {
-      $toolkit->setDestinationFormat('PNG');
+      $toolkit->arguments()->setDestinationFormat('PNG');
     }
     else {
-      $toolkit->setDestinationFormat('JPG');
+      $toolkit->arguments()->setDestinationFormat('JPG');
     }
-    $toolkit->setSourceFormat('PDF');
-    $toolkit->setSourceLocalPath($local_path);
+    $toolkit->arguments()->setSourceFormat('PDF');
+    $toolkit->arguments()->setSourceLocalPath($local_path);
     $toolkit->arguments()->setSourceFrames('[0]');
 
     return $toolkit->save($destination);
