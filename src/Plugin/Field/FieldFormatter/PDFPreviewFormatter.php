@@ -2,11 +2,15 @@
 
 namespace Drupal\pdfpreview\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Image\ImageFactory;
 use Drupal\image\Plugin\Field\FieldFormatter\ImageFormatter;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
+use Drupal\pdfpreview\PDFPreviewGenerator;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'pdfpreview' formatter.
@@ -20,6 +24,67 @@ use Drupal\Core\Url;
  * )
  */
 class PDFPreviewFormatter extends ImageFormatter {
+
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * The image factory.
+   *
+   * @var \Drupal\Core\Image\ImageFactory
+   */
+  protected $imageFactory;
+
+  /**
+   * The PDF Preview generator.
+   * @var \Drupal\pdfpreview\PDFPreviewGenerator
+   */
+  protected $pdfPreviewGenerator;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->setConfigFactory($container->get('config.factory'));
+    $instance->setImageFactory($container->get('image.factory'));
+    $instance->setPdfPreviewGenerator($container->get('pdfpreview.generator'));
+    return $instance;
+  }
+
+  /**
+   * Sets the config factory.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   */
+  public function setConfigFactory(ConfigFactoryInterface $config_factory) {
+    $this->configFactory = $config_factory;
+  }
+
+  /**
+   * Sets the image factory.
+   *
+   * @param \Drupal\Core\Image\ImageFactory $image_factory
+   *   The image factory.
+   */
+  public function setImageFactory(ImageFactory $image_factory) {
+    $this->imageFactory = $image_factory;
+  }
+
+  /**
+   * Sets the PDF Preview generator.
+   *
+   * @param \Drupal\pdfpreview\PDFPreviewGenerator $pdf_preview_generator
+   *   The PDF Preview generator.
+   */
+  public function setPdfPreviewGenerator(PDFPreviewGenerator $pdf_preview_generator) {
+    $this->pdfPreviewGenerator = $pdf_preview_generator;
+  }
 
   /**
    * {@inheritdoc}
@@ -57,7 +122,7 @@ class PDFPreviewFormatter extends ImageFormatter {
       '#title' => $this->t('Fallback to default file formatter'),
       '#description' => $this->t('When enabled, non-PDF files will be formatted using a default file formatter.'),
       '#default_value' => (boolean) $this->getSetting('fallback_formatter'),
-      '#return_value' => \Drupal::config('pdfpreview.settings')->get('fallback_formatter'),
+      '#return_value' => $this->configFactory->get('pdfpreview.settings')->get('fallback_formatter'),
     ];
     return $form;
   }
@@ -113,6 +178,7 @@ class PDFPreviewFormatter extends ImageFormatter {
       $cache_tags = $image_style->getCacheTags();
     }
 
+    /** @var \Drupal\file\Entity\File $file */
     foreach ($files as $delta => $file) {
       $cache_contexts = [];
       if (isset($link_file)) {
@@ -142,8 +208,8 @@ class PDFPreviewFormatter extends ImageFormatter {
       // Separate the PDF previews from the other files.
       $show_preview = FALSE;
       if ($file->getMimeType() == 'application/pdf') {
-        $preview_uri = \Drupal::service('pdfpreview.generator')->getPDFPreview($file);
-        $preview = \Drupal::service('image.factory')->get($preview_uri);
+        $preview_uri = $this->pdfPreviewGenerator->getPDFPreview($file);
+        $preview = $this->imageFactory->get($preview_uri);
         if ($preview->isValid()) {
           $show_preview = TRUE;
           $item->uri = $preview_uri;
