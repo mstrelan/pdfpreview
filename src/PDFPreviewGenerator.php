@@ -146,8 +146,8 @@ class PDFPreviewGenerator {
     $this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
     $toolkit->arguments()->add('-background white');
     $toolkit->arguments()->add('-flatten');
-    $toolkit->arguments()->add('-resize ' . escapeshellarg($config->get('size')));
-    $toolkit->arguments()->add('-quality ' . escapeshellarg($config->get('quality')));
+    $toolkit->arguments()->add('-resize ' . $toolkit->arguments()->escape($config->get('size')));
+    $toolkit->arguments()->add('-quality ' . $toolkit->arguments()->escape($config->get('quality')));
     if ($config->get('type') == 'png') {
       $toolkit->arguments()->setDestinationFormat('PNG');
     }
