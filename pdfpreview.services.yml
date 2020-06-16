@@ -1,4 +1,4 @@
 services:
   pdfpreview.generator:
-    class: Drupal\pdfpreview\PDFPreviewGenerator
+    class: Drupal\pdfpreview\PdfPreviewGenerator
     arguments: ['@config.factory', '@file_system', '@transliteration', '@image.toolkit.manager', '@language_manager']

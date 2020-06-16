@@ -9,7 +9,7 @@ use Drupal\Core\Image\ImageFactory;
 use Drupal\image\Plugin\Field\FieldFormatter\ImageFormatter;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
-use Drupal\pdfpreview\PDFPreviewGenerator;
+use Drupal\pdfpreview\PdfPreviewGenerator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -23,7 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
-class PDFPreviewFormatter extends ImageFormatter {
+class PdfPreviewFormatter extends ImageFormatter {
 
   /**
    * The config factory.
@@ -41,7 +41,7 @@ class PDFPreviewFormatter extends ImageFormatter {
 
   /**
    * The PDF Preview generator.
-   * @var \Drupal\pdfpreview\PDFPreviewGenerator
+   * @var \Drupal\pdfpreview\PdfPreviewGenerator
    */
   protected $pdfPreviewGenerator;
 
@@ -79,10 +79,10 @@ class PDFPreviewFormatter extends ImageFormatter {
   /**
    * Sets the PDF Preview generator.
    *
-   * @param \Drupal\pdfpreview\PDFPreviewGenerator $pdf_preview_generator
+   * @param \Drupal\pdfpreview\PdfPreviewGenerator $pdf_preview_generator
    *   The PDF Preview generator.
    */
-  public function setPdfPreviewGenerator(PDFPreviewGenerator $pdf_preview_generator) {
+  public function setPdfPreviewGenerator(PdfPreviewGenerator $pdf_preview_generator) {
     $this->pdfPreviewGenerator = $pdf_preview_generator;
   }
 
@@ -208,7 +208,7 @@ class PDFPreviewFormatter extends ImageFormatter {
       // Separate the PDF previews from the other files.
       $show_preview = FALSE;
       if ($file->getMimeType() == 'application/pdf') {
-        $preview_uri = $this->pdfPreviewGenerator->getPDFPreview($file);
+        $preview_uri = $this->pdfPreviewGenerator->getPdfPreview($file);
         $preview = $this->imageFactory->get($preview_uri);
         if ($preview->isValid()) {
           $show_preview = TRUE;

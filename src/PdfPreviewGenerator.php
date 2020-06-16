@@ -12,7 +12,7 @@ use Drupal\file\Entity\File;
 /**
  * Generates PDF Previews.
  */
-class PDFPreviewGenerator {
+class PdfPreviewGenerator {
 
   /**
    * Config factory.
@@ -50,7 +50,7 @@ class PDFPreviewGenerator {
   protected $languageManager;
 
   /**
-   * Constructs a PDFPreviewGenerator object.
+   * Constructs a PdfPreviewGenerator object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
@@ -77,7 +77,7 @@ class PDFPreviewGenerator {
    * @param \Drupal\file\Entity\File $file
    *   The file to generate a preview for.
    */
-  public function getPDFPreview(File $file) {
+  public function getPdfPreview(File $file) {
     $destination_uri = $this->getDestinationURI($file);
     // Check if a preview already exists.
     if (file_exists($destination_uri)) {
@@ -88,10 +88,10 @@ class PDFPreviewGenerator {
       }
       else {
         // Delete the existing but out-of-date preview.
-        $this->deletePDFPreview($file);
+        $this->deletePdfPreview($file);
       }
     }
-    if ($this->createPDFPreview($file, $destination_uri)) {
+    if ($this->createPdfPreview($file, $destination_uri)) {
       return $destination_uri;
     }
   }
@@ -102,7 +102,7 @@ class PDFPreviewGenerator {
    * @param \Drupal\file\Entity\File $file
    *   The file to delete the preview for.
    */
-  public function deletePDFPreview(File $file) {
+  public function deletePdfPreview(File $file) {
     $uri = $this->getDestinationURI($file);
     $this->fileSystem->delete($uri);
     image_path_flush($uri);
@@ -114,12 +114,12 @@ class PDFPreviewGenerator {
    * @param \Drupal\file\Entity\File $file
    *   The file to delete the preview for.
    */
-  public function updatePDFPreview(File $file) {
+  public function updatePdfPreview(File $file) {
     /** @var \Drupal\file\Entity\File $original */
     $original = $file->original;
     if ($file->getFileUri() != $original->getFileUri()
       || filesize($file->getFileUri()) != filesize($original->getFileUri())) {
-      $this->deletePDFPreview($original);
+      $this->deletePdfPreview($original);
     }
   }
 
@@ -134,7 +134,7 @@ class PDFPreviewGenerator {
    * @return bool
    *   TRUE if the preview was successfully generated, FALSE is otherwise.
    */
-  protected function createPDFPreview(File $file, $destination) {
+  protected function createPdfPreview(File $file, $destination) {
     $file_uri = $file->getFileUri();
     $local_path = $this->fileSystem->realpath($file_uri);
     $config = $this->configFactory->get('pdfpreview.settings');

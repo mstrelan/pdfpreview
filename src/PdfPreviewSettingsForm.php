@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Configure PDF preview settings for this site.
  */
-class PDFPreviewSettingsForm extends ConfigFormBase {
+class PdfPreviewSettingsForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}

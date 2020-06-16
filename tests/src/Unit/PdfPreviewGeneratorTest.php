@@ -5,15 +5,15 @@ namespace Drupal\Tests\pdfpreview\Unit;
 use Drupal\Component\Transliteration\TransliterationInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
-use Drupal\pdfpreview\PDFPreviewGenerator;
+use Drupal\pdfpreview\PdfPreviewGenerator;
 use Drupal\Tests\UnitTestCase;
 
 /**
- * @coversDefaultClass \Drupal\pdfpreview\PDFPreviewGenerator
+ * @coversDefaultClass \Drupal\pdfpreview\PdfPreviewGenerator
  *
  * @group pdfpreview
  */
-class PDFPreviewGeneratorTest extends UnitTestCase {
+class PdfPreviewGeneratorTest extends UnitTestCase {
 
   /**
    * The config factory.
@@ -42,7 +42,7 @@ class PDFPreviewGeneratorTest extends UnitTestCase {
     $file = $this->getFileMock($filename, $id);
     $generator = $this->getPdfPreviewGeneratorMock();
 
-    $reflection = new \ReflectionClass(PDFPreviewGenerator::class);
+    $reflection = new \ReflectionClass(PdfPreviewGenerator::class);
     $method = $reflection->getMethod('getDestinationURI');
     $method->setAccessible(TRUE);
 
@@ -74,7 +74,7 @@ class PDFPreviewGeneratorTest extends UnitTestCase {
   /**
    * Gets a mocked PDF Preview Generator for testing.
    *
-   * @return \Drupal\pdfpreview\PDFPreviewGenerator
+   * @return \Drupal\pdfpreview\PdfPreviewGenerator
    *   Mocked PDF Preview Generator.
    */
   protected function getPdfPreviewGeneratorMock() {
@@ -113,7 +113,7 @@ class PDFPreviewGeneratorTest extends UnitTestCase {
       ->method('getCurrentLanguage')
       ->willReturn($language);
 
-    $generator = $this->getMockBuilder('\Drupal\pdfpreview\PDFPreviewGenerator')
+    $generator = $this->getMockBuilder('\Drupal\pdfpreview\PdfPreviewGenerator')
       ->setConstructorArgs([
         $this->configFactory->reveal(),
         $file_system,

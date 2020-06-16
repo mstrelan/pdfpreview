@@ -22,14 +22,14 @@ function pdfpreview_theme($existing, $type, $theme, $path) {
  * Implements hook_ENTITY_TYPE_update().
  */
 function pdfpreview_file_update(EntityInterface $file) {
-  \Drupal::service('pdfpreview.generator')->updatePDFPreview($file);
+  \Drupal::service('pdfpreview.generator')->updatePdfPreview($file);
 }
 
 /**
  * Implements hook_ENTITY_TYPE_delete().
  */
 function pdfpreview_file_delete(EntityInterface $file) {
-  \Drupal::service('pdfpreview.generator')->deletePDFPreview($file);
+  \Drupal::service('pdfpreview.generator')->deletePdfPreview($file);
 }
 
 /**
